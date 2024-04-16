@@ -9,6 +9,7 @@ random.seed(time.time())
 import copy
 
 
+
 def create_chromosome(Jobs , population_size = 20):
 
     population = set()
