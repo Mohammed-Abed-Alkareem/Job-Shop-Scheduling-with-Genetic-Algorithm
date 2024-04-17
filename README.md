@@ -6,6 +6,7 @@ This project aims to develop a system for job shop scheduling using a genetic al
 
 ## Requirements
 
+
 - Implement a system for job shop scheduling using genetic algorithm.
 - Input:
   - List of jobs with their operation sequences.
