@@ -17,7 +17,7 @@ def generate_job_data(job_count, machine_count, max_phases, max_time):
 
 
 # Generate job data
-job_count = 5  # Change this value to adjust the number of jobs
+job_count = 10  # Change this value to adjust the number of jobs
 machine_count = 8  # Change this value to adjust the number of machines
 max_phases = 3  # Maximum number of phases per job
 max_time =20  # Maximum processing time for each phase
