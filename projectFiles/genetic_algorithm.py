@@ -1,14 +1,16 @@
 import copy
+
+
 import random
 import time
+
+random.seed(time.time())
 
 import matplotlib.pyplot as plt
 
 from matplotlib.patches import Patch
 
 from projectFiles.Job_Phases import *
-
-random.seed(time.time())
 
 
 def create_chromosome(Jobs, population_size = 7):
@@ -90,8 +92,14 @@ def machine_phases(chromosome):
     t = 0
     while True:
         # print("Time: ", t)
-        for phase in chrom:
+        #print machines that are available
+        # for mach in machines_process:
+        #     print(mach, machines_process[mach])
+
+        for phase in chromosome:
+
             if jobs[phase.job]['available'] and jobs[phase.job]['order'] == phase.phase_order and machines_process[phase.machine]['finish_time'] <= t:
+                # print("in the if statement")
                 # print("Job: ", phase.job, "Machine: ", phase.machine, "Duration: ", phase.duration, "Start Time: ", t)
                 jobs[phase.job]['available'] = False
                 jobs[phase.job]['available_at'] = phase.duration + t - 1  # Adjust here
@@ -110,6 +118,10 @@ def machine_phases(chromosome):
                 jobs[phase.job]['order'] += 1
 
                 chrom.remove(phase)
+
+            # else:
+            #     print("in the else statement")
+            #     print("Job: ", phase.job, "Machine: ", phase.machine, "Duration: ", phase.duration, "Start Time: ", t)
 
         for phase in chrom:
             if jobs[phase.job]['available_at'] == t:
@@ -197,25 +209,36 @@ def make_crossover(parent1, parent2):
     # Get the length of the chromosome
     chromosome_length = len(parent1)
     #get two random number less than the length of the chromosome TO MAKE THE CUTT
-    cut1 = random.randint(1, chromosome_length - 2)
-    cut2 = random.randint(cut1+1, chromosome_length - 1)
+    cut1 = random.randint(1, chromosome_length - 3)
+    cut2 = random.randint(cut1+1, chromosome_length - 2)
+
+
 
     print('length of chromosome: ', chromosome_length)
 
     print("Cut1: ", cut1)
     print("Cut2: ", cut2)
 
-    child1 = list(parent1[:cut1] + parent1[cut2:])
+
     #then fill the rest in between cut 1 and cut 2 from parent2 to child1 if not in child 1
+    child1 = list(parent1[:cut1] + parent1[cut2:])
 
     print(type(child1))
     print(type(parent2))
 
     for phase in parent2:
-        if phase not in child1:  #there is a problem here
-            #append after cut1 and before cut2
+        for p in child1:
+            if phase == p:
+                print("yes")
+
+        if phase not in child1:
+            # append after cut1 and before cut2
             child1.insert(cut1, phase)
             cut1 += 1
+
+        elif phase  in child1:  #there is a problem here
+           print("yes")
+
 
 
     print("Child1")
@@ -229,5 +252,9 @@ def make_crossover(parent1, parent2):
     print("chromosome 2")
     for phase in parent2:
         print(phase.__repr__())
+
+    print("makespan for child1")
+    machines_process = machine_phases(child1)
+    print(get_makespan(machines_process))
 
     draw_gantt_chart(machine_phases(child1), extract_jobs(machine_phases(child1)))
