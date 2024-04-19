@@ -9,10 +9,14 @@ class Phases:
     def __repr__(self):
         return f"{self.job}, order {self.phase_order} , machine {self.machine}, duration {self.duration}"
 
-    # def __eq__(self, other):
-    #     if isinstance(other, Phases):
-    #         return self.job == other.job and self.phase_order == other.phase_order and self.machine == other.machine and self.duration == other.duration
-    #     return False
+    def __eq__(self, other):
+        if isinstance(other, Phases):
+            return self.job == other.job and self.phase_order == other.phase_order and self.machine == other.machine and self.duration == other.duration
+        return False
+
+
+    def __hash__(self):
+        return hash((self.job, self.phase_order, self.machine, self.duration))
 
 
 class ProcessPhases (Phases):
