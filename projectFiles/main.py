@@ -33,3 +33,4 @@ draw_gantt_chart(machines_process, jobs)
 make_crossover(population[0], population[1])
 
 
+
