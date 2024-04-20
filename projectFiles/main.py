@@ -32,5 +32,20 @@ draw_gantt_chart(machines_process, jobs)
 
 make_crossover(population[0], population[1])
 
-
+# the mutation is not correct
+# print("before Mutation")
+# for phase in population[0]:
+#     print(phase.__repr__())
+#
+# print("makespan before Mutation")
+# machines_process = machine_phases(population[0])
+# print(get_makespan(machines_process))
+#
+# muted = make_mutation(population[0])
+#
+# print("make span After Mutation")
+#
+# machines_process = machine_phases(muted)
+# print(get_makespan(machines_process))
+#
 
