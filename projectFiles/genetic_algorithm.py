@@ -133,9 +133,9 @@ def machine_phases(chromosome):
 
         t += 1
 
-    print("machines_process")
-    for machine in machines_process:
-        print(machine, machines_process[machine])
+    # print("machines_process")
+    # for machine in machines_process:
+    #     print(machine, machines_process[machine])
 
     # print("jobs")
     # for job in jobs:
@@ -219,26 +219,19 @@ def make_crossover(parent1, parent2):
     print("Cut1: ", cut1)
     print("Cut2: ", cut2)
 
-
     #then fill the rest in between cut 1 and cut 2 from parent2 to child1 if not in child 1
     child1 = list(parent1[:cut1] + parent1[cut2:])
-
-    print(type(child1))
-    print(type(parent2))
-
     for phase in parent2:
-        for p in child1:
-            if phase == p:
-                print("yes")
-
         if phase not in child1:
             # append after cut1 and before cut2
             child1.insert(cut1, phase)
             cut1 += 1
 
-        elif phase  in child1:  #there is a problem here
-           print("yes")
-
+    child2 = list(parent2[:cut1] + parent2[cut2:])
+    for phase in parent1:
+        if phase not in child2:
+            child2.insert(cut1, phase)
+            cut1 += 1
 
 
     print("Child1")
@@ -258,3 +251,42 @@ def make_crossover(parent1, parent2):
     print(get_makespan(machines_process))
 
     draw_gantt_chart(machine_phases(child1), extract_jobs(machine_phases(child1)))
+
+
+# def make_mutation(chromosome):
+#     # Get two phases to swap
+#     phase1 = random.choice(chromosome)
+#     phase2 = random.choice(chromosome)
+#     while phase1 == phase2:
+#         phase2 = random.choice(chromosome)  # Ensure phase1 and phase2 are different
+#
+#     # Find the indices of the two phases
+#     index1 = chromosome.index(phase1)
+#     index2 = chromosome.index(phase2)
+#
+#     chromosome = list(chromosome)
+#
+#     for i in range(index2, len(chromosome)):
+#         if chromosome[index1].job == chromosome[i].job and chromosome[index1].phase_order > chromosome[i].phase_order:
+#             make_mutation(chromosome)
+#             break
+#
+#     for i in range(index1, len(chromosome)):
+#         if chromosome[index2].job == chromosome[i].job and chromosome[index2].phase_order > chromosome[i].phase_order:
+#             make_mutation(chromosome)
+#             break
+#
+#     # Swap the two phases
+#     chromosome[index1], chromosome[index2] = chromosome[index2], chromosome[index1]
+#
+#     #chek if the phase doesnot have any phase from the same jobe thats order is less than is before it
+#     for i in range(1, len(chromosome)):
+#         if chromosome[i].job == chromosome[i-1].job and chromosome[i].phase_order < chromosome[i-1].phase_order:
+#             make_mutation(chromosome)  # Call the function again to swap two different phases
+#             break
+#
+#     print("Mutation")
+#     for phase in chromosome:
+#         print(phase.__repr__())
+#
+#     return tuple(chromosome)
