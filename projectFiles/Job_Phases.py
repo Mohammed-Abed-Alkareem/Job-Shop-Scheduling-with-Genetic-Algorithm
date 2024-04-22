@@ -15,6 +15,8 @@ class Phases:
         return False
 
 
+
+
     def __hash__(self):
         return hash((self.job, self.phase_order, self.machine, self.duration))
 

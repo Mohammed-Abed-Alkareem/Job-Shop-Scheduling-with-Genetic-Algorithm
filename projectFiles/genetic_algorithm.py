@@ -13,7 +13,7 @@ from matplotlib.patches import Patch
 from projectFiles.Job_Phases import *
 
 
-def create_chromosome(Jobs, population_size = 7):
+def create_chromosome(Jobs, population_size = 8):
 
     population = set()
     x = 0
@@ -87,7 +87,7 @@ def machine_phases(chromosome):
 
     chrom = list(chromosome)
 
-    print(chrom)
+    # print(chrom)
 
     t = 0
     while True:
@@ -214,10 +214,10 @@ def make_crossover(parent1, parent2):
 
 
 
-    print('length of chromosome: ', chromosome_length)
-
-    print("Cut1: ", cut1)
-    print("Cut2: ", cut2)
+    # print('length of chromosome: ', chromosome_length)
+    #
+    # print("Cut1: ", cut1)
+    # print("Cut2: ", cut2)
 
     #then fill the rest in between cut 1 and cut 2 from parent2 to child1 if not in child 1
     child1 = list(parent1[:cut1] + parent1[cut2:])
@@ -233,24 +233,7 @@ def make_crossover(parent1, parent2):
             child2.insert(cut1, phase)
             cut1 += 1
 
-
-    print("Child1")
-    for phase in child1:
-        print(phase.__repr__())
-
-    print("chromosome 1" )
-    for phase in parent1:
-        print(phase.__repr__())
-
-    print("chromosome 2")
-    for phase in parent2:
-        print(phase.__repr__())
-
-    print("makespan for child1")
-    machines_process = machine_phases(child1)
-    print(get_makespan(machines_process))
-
-    draw_gantt_chart(machine_phases(child1), extract_jobs(machine_phases(child1)))
+    return tuple(child1), tuple(child2)
 
 
 # def make_mutation(chromosome):
@@ -285,8 +268,116 @@ def make_crossover(parent1, parent2):
 #             make_mutation(chromosome)  # Call the function again to swap two different phases
 #             break
 #
-#     print("Mutation")
-#     for phase in chromosome:
-#         print(phase.__repr__())
-#
 #     return tuple(chromosome)
+
+
+def make_mutation(chromosome):
+    chromosome = list(chromosome)
+    while True:
+        # Get two phases to swap
+        phase1 = random.choice(chromosome)
+        phase2 = random.choice(chromosome)
+        while phase1 == phase2:
+            phase2 = random.choice(chromosome)  # Ensure phase1 and phase2 are different
+
+        # Find the indices of the two phases
+        index1 = chromosome.index(phase1)
+        index2 = chromosome.index(phase2)
+
+        # Swap the two phases
+        chromosome[index1], chromosome[index2] = chromosome[index2], chromosome[index1]
+
+        # Check if the phase does not have any phase from the same job that's order is less than it before it
+        invalid_chromosome = False
+        for i in range(1, len(chromosome)):
+            if chromosome[i].job == chromosome[i-1].job and chromosome[i].phase_order < chromosome[i-1].phase_order:
+                invalid_chromosome = True
+                break
+
+        if not invalid_chromosome:
+            break
+
+    return tuple(chromosome)
+
+
+def get_weightes(population):
+    sum_fitness = 0
+    weights = []
+
+    for chromosome in population:
+        make_span = get_makespan(machine_phases(chromosome))
+        sum_fitness += 1/ make_span
+        weights.append(1 / make_span)
+
+    #devied the weights by the sum of the fitness
+    weights = [weight / sum_fitness for weight in weights]
+
+    #i checked that the sum is 1
+
+    return weights
+
+
+def generate_new_population(population, weights, population_size):
+    new_population = set()
+
+    while len(new_population) < population_size:
+        parent1 = random.choices(population, weights)[0]
+        parent2 = random.choices(population, weights)[0]
+
+        child1, child2 = make_crossover(parent1, parent2)
+
+        # Perform mutation
+        if random.random() < 0.2: # 20% chance of mutation change as needed
+            child1 = make_mutation(child1)
+        if random.random() < 0.2:
+            child2 = make_mutation(child2)
+
+        new_population.add(child1)
+        new_population.add(child2)
+
+    return list(new_population)
+
+
+def choose_new_population(population, new_population):
+    # Combine the old and new populations
+    combined_population = population + new_population
+
+    # Get the fitness of each chromosome in the combined population
+    fitness = [1 / get_makespan(machine_phases(chromosome)) for chromosome in combined_population]
+
+    # Sort the combined population based on fitness
+    combined_population = [chromosome for _, chromosome in
+                           sorted(zip(fitness, combined_population), key=lambda x: x[0], reverse=True)]
+
+    # Choose the top chromosomes to form the new population
+    return combined_population[:len(population)]
+
+def genetic_algorithm(Jobs, population_size=8, generations=10): #print the progress percentage
+
+
+    best_make_spans = set()
+    population = create_chromosome(Jobs, population_size)
+
+    for generation in range(generations):
+        weights = get_weightes(population)
+        new_population = generate_new_population(population, weights, population_size)
+        population = choose_new_population(population, new_population)
+        # #get the best makespan
+        # best_make_spans.add(get_makespan(machine_phases(population[0])))
+        print(f"Generation {generation + 1}/{generations} completed")# for the progress percentage
+
+
+    best_chromosome = population[0]
+    machines_process = machine_phases(best_chromosome)
+    jobs = extract_jobs(machines_process)
+    draw_gantt_chart(machines_process, jobs)
+    makespan = get_makespan(machines_process)
+
+    print("Best Chromosome")
+    for phase in best_chromosome:
+        print(phase.__repr__())
+    print("Best Makespan")
+    print(makespan)
+    print("Best Makespans")
+    print(best_make_spans)
+    return best_chromosome, makespan
