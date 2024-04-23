@@ -52,4 +52,4 @@ Jobs = dictionary_store("job_shop_schedule.csv")
 
 # get_weightes(population)
 
-genetic_algorithm(Jobs, population_size=15, generations=50)
+genetic_algorithm(Jobs, population_size=20, generations=1000)

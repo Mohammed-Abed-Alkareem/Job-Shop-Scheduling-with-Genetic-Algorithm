@@ -4,7 +4,7 @@ import copy
 import random
 import time
 
-random.seed(time.time())
+
 
 import matplotlib.pyplot as plt
 
@@ -15,7 +15,7 @@ from projectFiles.Job_Phases import *
 
 def create_chromosome(Jobs, population_size = 8):
 
-    population = set()
+    population = []
     x = 0
 
     while len(population) < population_size:
@@ -51,10 +51,10 @@ def create_chromosome(Jobs, population_size = 8):
                 del Jobs_copy[job]
 
         # Convert the chromosome to a tuple before adding to the set
-        population.add(tuple(chromosome))
+        population.append(tuple(chromosome))
 
-    # Convert the set back to a list for consistency with the rest of your code
-    population = list(population)
+    # # Convert the set back to a list for consistency with the rest of your code
+    # population = list(population)
 
     # print("Population")
     # for chromosome in population:
@@ -169,7 +169,7 @@ def draw_gantt_chart(machines_process, jobs):
 
 
     # make the x axis more divided
-    ax.set_xticks(range(0, max([phase.start_time + phase.duration for machine in machines_process for phase in machines_process[machine]['process']]), 2))
+    ax.set_xticks(range(0, max([phase.start_time + phase.duration for machine in machines_process for phase in machines_process[machine]['process']]), 10))
 
 
 
@@ -318,7 +318,7 @@ def get_weightes(population):
 
 
 def generate_new_population(population, weights, population_size):
-    new_population = set()
+    new_population = []
 
     while len(new_population) < population_size:
         parent1 = random.choices(population, weights)[0]
@@ -332,10 +332,10 @@ def generate_new_population(population, weights, population_size):
         if random.random() < 0.2:
             child2 = make_mutation(child2)
 
-        new_population.add(child1)
-        new_population.add(child2)
+        new_population.append(child1)
+        new_population.append(child2)
 
-    return list(new_population)
+    return new_population
 
 
 def choose_new_population(population, new_population):
@@ -356,14 +356,16 @@ def genetic_algorithm(Jobs, population_size=8, generations=10): #print the progr
 
 
     best_make_spans = set()
+    worst_make_spans = set()
     population = create_chromosome(Jobs, population_size)
 
     for generation in range(generations):
         weights = get_weightes(population)
         new_population = generate_new_population(population, weights, population_size)
         population = choose_new_population(population, new_population)
-        # #get the best makespan
-        # best_make_spans.add(get_makespan(machine_phases(population[0])))
+        #get the best makespan
+        best_make_spans.add(get_makespan(machine_phases(population[0])))
+        worst_make_spans.add(get_makespan(machine_phases(population[-1])))
         print(f"Generation {generation + 1}/{generations} completed")# for the progress percentage
 
 
@@ -380,4 +382,6 @@ def genetic_algorithm(Jobs, population_size=8, generations=10): #print the progr
     print(makespan)
     print("Best Makespans")
     print(best_make_spans)
+    print("Worst Makespans")
+    print(worst_make_spans)
     return best_chromosome, makespan
