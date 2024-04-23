@@ -2,6 +2,11 @@ import copy
 
 
 import random
+
+from Fitness_Functions import get_makespan, get_working_time
+
+random.seed()
+
 import time
 
 
@@ -74,7 +79,7 @@ def machine_phases(chromosome):
     jobs = {}  # to store weather if a job is currently working
 
     for phase in chromosome:
-        machines_process[phase.machine] = {'process': [], 'finish_time': 0}
+        machines_process[phase.machine] = {'process': [], 'finish_time': 0, 'start_time': 0}
         jobs[phase.job] = {'available': True, 'order': 1, 'available_at': 0}
 
 
@@ -98,13 +103,20 @@ def machine_phases(chromosome):
 
         for phase in chromosome:
 
-            if jobs[phase.job]['available'] and jobs[phase.job]['order'] == phase.phase_order and machines_process[phase.machine]['finish_time'] <= t:
+            if (jobs[phase.job]['available'] and
+                    jobs[phase.job]['order'] == phase.phase_order and
+                    machines_process[phase.machine]['finish_time'] <= t):
+
                 # print("in the if statement")
                 # print("Job: ", phase.job, "Machine: ", phase.machine, "Duration: ", phase.duration, "Start Time: ", t)
                 jobs[phase.job]['available'] = False
                 jobs[phase.job]['available_at'] = phase.duration + t - 1  # Adjust here
 
                 machines_process[phase.machine]['finish_time'] = phase.duration + t
+
+#                #store the start time of the machine only for first time
+                if machines_process[phase.machine]['start_time'] == 0:
+                    machines_process[phase.machine]['start_time'] = t
 
                 machines_process[phase.machine]['process'].append(
                     ProcessPhases(job=phase.job,
@@ -196,11 +208,7 @@ def extract_jobs(machines_process):
     return jobs
 
 
-def get_makespan(machines_process):  #this function is to get the makespan wich is the fitness function
-    makespan = 0
-    for machine_data in machines_process.values():
-        makespan = max(makespan, machine_data['finish_time'])
-    return makespan
+
 
 def make_crossover(parent1, parent2):
     child1 = []
@@ -272,6 +280,7 @@ def make_crossover(parent1, parent2):
 
 
 def make_mutation(chromosome):
+    print("Mutation")
     chromosome = list(chromosome)
     while True:
         # Get two phases to swap
@@ -300,13 +309,13 @@ def make_mutation(chromosome):
     return tuple(chromosome)
 
 
-def get_weightes(population):
+def get_weights(population, fitness_function=get_makespan):
     sum_fitness = 0
     weights = []
 
     for chromosome in population:
-        make_span = get_makespan(machine_phases(chromosome))
-        sum_fitness += 1/ make_span
+        make_span = fitness_function(machine_phases(chromosome))
+        sum_fitness += 1 / make_span
         weights.append(1 / make_span)
 
     #devied the weights by the sum of the fitness
@@ -317,7 +326,7 @@ def get_weightes(population):
     return weights
 
 
-def generate_new_population(population, weights, population_size):
+def generate_new_population(population, weights, population_size, mutation_rate=0.01):
     new_population = []
 
     while len(new_population) < population_size:
@@ -327,9 +336,9 @@ def generate_new_population(population, weights, population_size):
         child1, child2 = make_crossover(parent1, parent2)
 
         # Perform mutation
-        if random.random() < 0.2: # 20% chance of mutation change as needed
+        if random.random() < mutation_rate: # 20% chance of mutation change as needed
             child1 = make_mutation(child1)
-        if random.random() < 0.2:
+        if random.random() < mutation_rate:
             child2 = make_mutation(child2)
 
         new_population.append(child1)
@@ -338,12 +347,12 @@ def generate_new_population(population, weights, population_size):
     return new_population
 
 
-def choose_new_population(population, new_population):
+def choose_new_population(population, new_population, fitness_function=get_makespan):
     # Combine the old and new populations
     combined_population = population + new_population
 
     # Get the fitness of each chromosome in the combined population
-    fitness = [1 / get_makespan(machine_phases(chromosome)) for chromosome in combined_population]
+    fitness = [1 / fitness_function(machine_phases(chromosome)) for chromosome in combined_population]
 
     # Sort the combined population based on fitness
     combined_population = [chromosome for _, chromosome in
@@ -352,28 +361,28 @@ def choose_new_population(population, new_population):
     # Choose the top chromosomes to form the new population
     return combined_population[:len(population)]
 
-def genetic_algorithm(Jobs, population_size=8, generations=10): #print the progress percentage
 
+def genetic_algorithm(jobs, population_size=8, generations=10, mutation_rate=0.01, fitness_function=get_makespan): #print the progress percentage
 
     best_make_spans = set()
     worst_make_spans = set()
-    population = create_chromosome(Jobs, population_size)
+    population = create_chromosome(jobs, population_size)
 
     for generation in range(generations):
-        weights = get_weightes(population)
-        new_population = generate_new_population(population, weights, population_size)
+        weights = get_weights(population)
+        new_population = generate_new_population(population, weights, population_size , mutation_rate)
         population = choose_new_population(population, new_population)
-        #get the best makespan
-        best_make_spans.add(get_makespan(machine_phases(population[0])))
-        worst_make_spans.add(get_makespan(machine_phases(population[-1])))
-        print(f"Generation {generation + 1}/{generations} completed")# for the progress percentage
 
+#       #get the best makespan
+        best_make_spans.add(fitness_function(machine_phases(population[0])))
+        worst_make_spans.add(fitness_function(machine_phases(population[-1])))
+        print(f"Generation {generation + 1}/{generations} completed")# for the progress percentage
 
     best_chromosome = population[0]
     machines_process = machine_phases(best_chromosome)
     jobs = extract_jobs(machines_process)
     draw_gantt_chart(machines_process, jobs)
-    makespan = get_makespan(machines_process)
+    makespan = fitness_function(machines_process)
 
     print("Best Chromosome")
     for phase in best_chromosome:

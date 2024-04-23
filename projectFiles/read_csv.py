@@ -21,11 +21,3 @@ def dictionary_store(file_path):
             Jobs[row["Job"]].append((machine, int(time[:-1])))
     return Jobs
 
-
-
-# Example usage
-Jobs = dictionary_store("job_shop_schedule.csv")
-#print each job on a row
-for job in Jobs:
-    print(job, Jobs[job])
-

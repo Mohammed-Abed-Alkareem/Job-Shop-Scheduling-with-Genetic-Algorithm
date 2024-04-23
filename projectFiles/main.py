@@ -1,6 +1,7 @@
 
 from read_csv import dictionary_store
-from genetic_algorithm import *
+from genetic_algorithm import genetic_algorithm
+from Fitness_Functions import get_makespan, get_working_time
 
 Jobs = dictionary_store("job_shop_schedule.csv")
 
@@ -51,5 +52,14 @@ Jobs = dictionary_store("job_shop_schedule.csv")
 #
 
 # get_weightes(population)
+#calculate time take on the function
+import time
+start = time.time()
 
-genetic_algorithm(Jobs, population_size=20, generations=1000)
+genetic_algorithm(jobs=Jobs, population_size=20, generations=100, mutation_rate=0.05, fitness_function=get_working_time)
+genetic_algorithm(jobs=Jobs, population_size=20, generations=100, mutation_rate=0.05, fitness_function=get_makespan)
+
+end = time.time()
+print("Time taken to run the function")
+print(end - start)
+
