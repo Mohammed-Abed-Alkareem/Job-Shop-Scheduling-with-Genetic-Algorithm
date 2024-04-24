@@ -56,8 +56,9 @@ Jobs = dictionary_store("job_shop_schedule.csv")
 import time
 start = time.time()
 
-genetic_algorithm(jobs=Jobs, population_size=20, generations=100, mutation_rate=0.05, fitness_function=get_working_time)
-genetic_algorithm(jobs=Jobs, population_size=20, generations=100, mutation_rate=0.05, fitness_function=get_makespan)
+# genetic_algorithm(jobs=Jobs, population_size=20, generations=100, mutation_rate=0.05, fitness_function=get_working_time, satisfication_vlue=500)
+
+genetic_algorithm(jobs=Jobs, population_size=20, generations=1000, mutation_rate=0.05, fitness_function=get_makespan, satisfication_vlue=120)
 
 end = time.time()
 print("Time taken to run the function")

@@ -314,9 +314,9 @@ def get_weights(population, fitness_function=get_makespan):
     weights = []
 
     for chromosome in population:
-        make_span = fitness_function(machine_phases(chromosome))
-        sum_fitness += 1 / make_span
-        weights.append(1 / make_span)
+        fitness_value = fitness_function(machine_phases(chromosome))
+        sum_fitness += 1 / fitness_value
+        weights.append(1 / fitness_value)
 
     #devied the weights by the sum of the fitness
     weights = [weight / sum_fitness for weight in weights]
@@ -362,7 +362,7 @@ def choose_new_population(population, new_population, fitness_function=get_makes
     return combined_population[:len(population)]
 
 
-def genetic_algorithm(jobs, population_size=8, generations=10, mutation_rate=0.01, fitness_function=get_makespan): #print the progress percentage
+def genetic_algorithm(jobs, population_size=8, generations=10, mutation_rate=0.01, fitness_function=get_makespan, satisfication_vlue=0): #print the progress percentage
 
     best_make_spans = set()
     worst_make_spans = set()
@@ -372,6 +372,9 @@ def genetic_algorithm(jobs, population_size=8, generations=10, mutation_rate=0.0
         weights = get_weights(population)
         new_population = generate_new_population(population, weights, population_size , mutation_rate)
         population = choose_new_population(population, new_population)
+
+        if fitness_function(machine_phases(population[0])) <= satisfication_vlue:
+            break
 
 #       #get the best makespan
         best_make_spans.add(fitness_function(machine_phases(population[0])))
