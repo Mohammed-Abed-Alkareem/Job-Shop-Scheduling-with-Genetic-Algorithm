@@ -14,9 +14,6 @@ class Phases:
             return self.job == other.job and self.phase_order == other.phase_order and self.machine == other.machine and self.duration == other.duration
         return False
 
-
-
-
     def __hash__(self):
         return hash((self.job, self.phase_order, self.machine, self.duration))
 
