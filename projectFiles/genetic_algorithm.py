@@ -156,9 +156,13 @@ def machine_phases(chromosome):
     return machines_process
 
 
-def draw_gantt_chart(machines_process, jobs):
+def draw_gantt_chart(machines_process, jobs, ax=None):
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(12, 8))
+
+    else:
+        ax.clear()
 
     yticks = []
     yticklabels = []
@@ -193,7 +197,17 @@ def draw_gantt_chart(machines_process, jobs):
     #start from 0
     ax.set_xlim(0, max([phase.start_time + phase.duration for machine in machines_process for phase in machines_process[machine]['process']]))
 
+    # Set the title and labels
+    ax.set_title('Gantt Chart')
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Machines')
+
     plt.show()
+    # Redraw the figure
+    ax.figure.canvas.draw()
+
+
+
 
 
 def extract_jobs(machines_process):
