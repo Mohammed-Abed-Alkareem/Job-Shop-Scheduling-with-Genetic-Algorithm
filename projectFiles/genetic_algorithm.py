@@ -4,6 +4,7 @@ import copy
 import random
 
 from Fitness_Functions import get_makespan, get_working_time
+from projectFiles.read_csv import dictionary_store
 
 random.seed()
 
@@ -16,7 +17,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
 from projectFiles.Job_Phases import *
-
+from crossovers import make_crossover, modified_order_crossover
 
 def create_chromosome(Jobs, population_size = 8):
 
@@ -202,12 +203,9 @@ def draw_gantt_chart(machines_process, jobs, ax=None):
     ax.set_xlabel('Time')
     ax.set_ylabel('Machines')
 
-    plt.show()
+    #plt.show()
     # Redraw the figure
     ax.figure.canvas.draw()
-
-
-
 
 
 def extract_jobs(machines_process):
@@ -220,42 +218,6 @@ def extract_jobs(machines_process):
     jobs = sorted(jobs, key=lambda x: int(x.split("_")[1]))
 
     return jobs
-
-
-
-
-def make_crossover(parent1, parent2):
-    child1 = []
-    child2 = []
-
-    # Get the length of the chromosome
-    chromosome_length = len(parent1)
-    #get two random number less than the length of the chromosome TO MAKE THE CUTT
-    cut1 = random.randint(1, chromosome_length - 3)
-    cut2 = random.randint(cut1+1, chromosome_length - 2)
-
-
-
-    # print('length of chromosome: ', chromosome_length)
-    #
-    # print("Cut1: ", cut1)
-    # print("Cut2: ", cut2)
-
-    #then fill the rest in between cut 1 and cut 2 from parent2 to child1 if not in child 1
-    child1 = list(parent1[:cut1] + parent1[cut2:])
-    for phase in parent2:
-        if phase not in child1:
-            # append after cut1 and before cut2
-            child1.insert(cut1, phase)
-            cut1 += 1
-
-    child2 = list(parent2[:cut1] + parent2[cut2:])
-    for phase in parent1:
-        if phase not in child2:
-            child2.insert(cut1, phase)
-            cut1 += 1
-
-    return tuple(child1), tuple(child2)
 
 
 # def make_mutation(chromosome):
@@ -340,14 +302,14 @@ def get_weights(population, fitness_function=get_makespan):
     return weights
 
 
-def generate_new_population(population, weights, population_size, mutation_rate=0.01):
+def generate_new_population(population, weights, population_size, mutation_rate=0.01, crossover_function=make_crossover):
     new_population = []
 
     while len(new_population) < population_size:
         parent1 = random.choices(population, weights)[0]
         parent2 = random.choices(population, weights)[0]
 
-        child1, child2 = make_crossover(parent1, parent2)
+        child1, child2 = crossover_function(parent1, parent2)
 
         # Perform mutation
         if random.random() < mutation_rate: # 20% chance of mutation change as needed
@@ -376,7 +338,9 @@ def choose_new_population(population, new_population, fitness_function=get_makes
     return combined_population[:len(population)]
 
 
-def genetic_algorithm(jobs, population_size=8, generations=10, mutation_rate=0.01, fitness_function=get_makespan, satisfication_vlue=0): #print the progress percentage
+def genetic_algorithm(jobs, population_size=8, generations=10,
+                      mutation_rate=0.01, fitness_function=get_makespan, satisfication_vlue=0,
+                      crossover_function=make_crossover): #print the progress percentage
 
     best_make_spans = set()
     worst_make_spans = set()
@@ -384,7 +348,7 @@ def genetic_algorithm(jobs, population_size=8, generations=10, mutation_rate=0.0
 
     for generation in range(generations):
         weights = get_weights(population)
-        new_population = generate_new_population(population, weights, population_size , mutation_rate)
+        new_population = generate_new_population(population, weights, population_size , mutation_rate, crossover_function)
         population = choose_new_population(population, new_population)
 
         if fitness_function(machine_phases(population[0])) <= satisfication_vlue:
@@ -411,3 +375,10 @@ def genetic_algorithm(jobs, population_size=8, generations=10, mutation_rate=0.0
     print("Worst Makespans")
     print(worst_make_spans)
     return best_chromosome, makespan
+
+if __name__ == '__main__':
+    Jobs = dictionary_store("job_shop_schedule.csv")
+    population = create_chromosome(Jobs)
+
+    for i in population:
+        print(i)

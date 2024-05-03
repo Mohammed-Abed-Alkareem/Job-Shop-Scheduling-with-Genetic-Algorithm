@@ -5,6 +5,7 @@ from matplotlib.figure import Figure
 from read_csv import dictionary_store
 from genetic_algorithm import genetic_algorithm, machine_phases, extract_jobs, draw_gantt_chart
 from Fitness_Functions import get_makespan, get_working_time
+from crossovers import make_crossover, modified_order_crossover
 
 Jobs = dictionary_store("job_shop_schedule.csv")
 
@@ -61,6 +62,16 @@ class GUI:
         self.fitness_function_label.pack(pady=3)
         self.fitness_function_combobox.pack(pady=3)
 
+        self.crossover_function_label = ttk.Label(master, text="Crossover Function:", font=label_font,
+                                                  background=label_bg_color, foreground=label_fg_color)
+        self.crossover_function_label.pack(pady=3)
+        self.crossover_function_var = tk.StringVar()
+        self.crossover_function_combobox = ttk.Combobox(master, textvariable=self.crossover_function_var,
+                                                        values=["Normal Crossover", "Modified Order Crossover"],
+                                                        font=entry_font, background=entry_bg_color,
+                                                        foreground=entry_fg_color)
+        self.crossover_function_combobox.pack(pady=3)
+
         self.run_button = ttk.Button(master, text="Run Genetic Algorithm", command=self.run_genetic_algorithm, style="Run.TButton")
         self.run_button.pack(pady=3)
 
@@ -93,11 +104,13 @@ class GUI:
         mutation_rate = float(self.mutation_rate_entry.get())
         satisfaction_value = int(self.satisfaction_value_entry.get())
         fitness_function = get_makespan if self.fitness_function_var.get() == "Makespan" else get_working_time
+        crossover_function = make_crossover if self.crossover_function_var.get() == "Normal Crossover" else modified_order_crossover
 
         best_chromosome, makespan = genetic_algorithm(jobs=Jobs, population_size=population_size,
                                                       generations=generations, mutation_rate=mutation_rate,
                                                       fitness_function=fitness_function,
-                                                      satisfication_vlue=satisfaction_value)
+                                                      satisfication_vlue=satisfaction_value,
+                                                      crossover_function=crossover_function)
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
