@@ -94,3 +94,78 @@ def make_crossover(parent1, parent2):
             cut1 += 1
 
     return tuple(child1), tuple(child2)
+
+
+def cross_over(parent1, parent2):
+    '''this is another crossover by taking phase from one parent and the other from the other parent and so on make sure that the phase doesnot already exists in the child'''
+    child1 = []
+    child2 = []
+    P1 = 0
+    P2 = 0
+
+    # print("parent 1")
+    # for phase in parent1:
+    #     print(phase)
+    #
+    #
+    # print("parent 2")
+    # for phase in parent2:
+    #     print(phase)
+
+
+    #if the phase is already in the child go to next phase
+    while len(child1) < len(parent1):
+        if len(child1) % 2 == 0:
+            if parent1[P1] not in child1:
+                child1.append(parent1[P1])
+            else:
+                P1 += 1
+
+        else:
+            if parent2[P2] not in child1:
+                child1.append(parent2[P2])
+            else:
+                P2 += 1
+
+    P1 = 0
+    P2 = 0
+    while len(child2) < len(parent2):
+        if len(child2) % 2 == 1:
+            if parent1[P1] not in child2:
+                child2.append(parent1[P1])
+            else:
+                P1 += 1
+        else:
+            if parent2[P2] not in child2:
+                child2.append(parent2[P2])
+            else:
+                P2 += 1
+
+    # print("child 1")
+    # for phase in child1:
+    #     print(phase)
+
+    print(check_order(child1))
+
+    # print("child 2")
+    # for phase in child2:
+    #     print(phase)
+
+    print(check_order(child2))
+    return tuple(child1), tuple(child2)
+
+#check if order in consistent
+def check_order(child):
+    jobs= {}
+    for phase in child:
+        if phase.job in jobs:
+
+            if jobs[phase.job] > phase.phase_order:
+                return False
+
+            jobs[phase.job] = phase.phase_order
+
+        else:
+            jobs[phase.job] = phase.phase_order
+
+    return True
