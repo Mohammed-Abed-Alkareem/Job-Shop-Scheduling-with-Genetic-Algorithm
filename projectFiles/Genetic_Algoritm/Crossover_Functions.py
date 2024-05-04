@@ -45,19 +45,11 @@ def modified_order_crossover(parent1, parent2):
             child2.append(item)
             child2_elements.add(item)
 
-    def correct_job_order(child):
-        jobs = set(phase.job for phase in child)
-        for job in jobs:
-            phases = [phase for phase in child if phase.job == job]
-            phases.sort(key=lambda phase: phase.phase_order)
-            for i, phase in enumerate(phases):
-                index = child.index(phase)
-                # Swap if the current phase is out of order
-                if index != i:
-                    child[index], child[i] = child[i], child[index]
+    while not check_order(child1):
+        child1 = correct_job_order(child1)
 
-    correct_job_order(child1)
-    correct_job_order(child2)
+    while not check_order(child2):
+        child2 = correct_job_order(child2)
 
     return tuple(child1), tuple(child2)
 
@@ -92,6 +84,13 @@ def make_crossover(parent1, parent2):
         if phase not in child2:
             child2.insert(cut1, phase)
             cut1 += 1
+
+
+    while not check_order(child1):
+        child1 = correct_job_order(child1)
+
+    while not check_order(child2):
+        child2 = correct_job_order(child2)
 
     return tuple(child1), tuple(child2)
 
@@ -181,31 +180,42 @@ def check_order(chromosome):
 
 
 def correct_job_order(chromosome):
+    for phase in chromosome:
+        print(phase)
+
     chromosome = list(chromosome)
     jobs = {}
+
     swap_made = True  # Initialize swap_made to True to enter the while loop
 
     print("Correcting job order")
 
     while swap_made:  # Continue until no swaps are made in a full pass
         swap_made = False  # Reset swap_made to False at the start of each pass
-        jobs = {}
+
         for phase in chromosome:
-            if phase.job in jobs:
-                if jobs[phase.job] > phase.phase_order:
-                    print("Swapping")
-                    # Find the phase that is in its order and swap it with the current phase
-                    for i in range(chromosome.index(phase) - 1):
-                        if chromosome[i].job == phase.job and chromosome[i].phase_order > phase.phase_order:
-                            print(f"Swapping {chromosome[i]} with {chromosome[chromosome.index(phase)]}")
+            jobs[phase.job] = 1
 
-                            chromosome[i], chromosome[chromosome.index(phase)] = (
-                                chromosome[chromosome.index(phase)], chromosome[i])
+        for phase in chromosome:
 
-                            swap_made = True  # Set swap_made to True because a swap was made
-                            break  # Break the inner loop to restart from the first phase
-                jobs[phase.job] = phase.phase_order  # Update the phase order in the dictionary
+            if jobs[phase.job] < phase.phase_order:
+                print(f"Phase {phase} is out of order")
+                print(jobs)
+                print("Swapping")
+                # Find the phase that is in its order and swap it with the current phase
+                for i in range(chromosome.index(phase)+1, len(chromosome)):
+                    if chromosome[i].job == phase.job and chromosome[i].phase_order == jobs[phase.job]:
+                        print(f"Swapping {chromosome[i]} with {chromosome[chromosome.index(phase)]}")
+
+                        chromosome[i], chromosome[chromosome.index(phase)] = (
+                            chromosome[chromosome.index(phase)], chromosome[i])
+
+                        swap_made = True  # Set swap_made to True because a swap was made
+                        break
+
+                break
+
             else:
-                jobs[phase.job] = phase.phase_order  # Initialize the phase order in the dictionary
+                jobs[phase.job] += 1
 
     return tuple(chromosome)
