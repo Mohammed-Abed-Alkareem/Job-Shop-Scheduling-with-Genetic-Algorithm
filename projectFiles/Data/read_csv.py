@@ -23,12 +23,12 @@ def dictionary_store(file_path):
             Jobs[row["Job"]].append((machine, int(time[:-1])))
 
 
-    print(Jobs)
+    # print(Jobs)
     items = list(Jobs.items())
     random.shuffle(items)
     Jobs = dict(items)
 
-    print(Jobs)
+    # print(Jobs)
     return Jobs
 
 if __name__ == "__main__":

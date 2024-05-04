@@ -1,6 +1,7 @@
 
 from projectFiles.Data.read_csv import dictionary_store
 from projectFiles.Genetic_Algoritm.genetic_algorithm import create_chromosome
+from projectFiles.Genetic_Algoritm.Crossover_Functions import correct_job_order, check_order
 
 Jobs = dictionary_store("Data/job_shop_schedule.csv")
 
@@ -66,8 +67,16 @@ from projectFiles.Genetic_Algoritm.Crossover_Functions import cross_over
 
 pop = create_chromosome(Jobs)
 #run crossover for all the  each one with the others
-test = set()
-for i in range(0, len(pop)):
-    for j in range(i+1, len(pop)):
-        cross_over(pop[i], pop[j])
+# test = set()
+# for i in range(0, len(pop)):
+#     for j in range(i+1, len(pop)):
+#         cross_over(pop[i], pop[j])
+
+
+a = correct_job_order(pop[0])
+b = pop[0]
+
+#check if each element in a is in b
+print(a==b)
+
 

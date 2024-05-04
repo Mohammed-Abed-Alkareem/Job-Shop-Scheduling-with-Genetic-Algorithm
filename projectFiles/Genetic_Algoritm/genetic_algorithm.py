@@ -362,7 +362,7 @@ def genetic_algorithm(jobs, population_size=8, generations=10,
 #       #get the best makespan
         best_make_spans.add(fitness_function(machine_phases(population[0])))
         worst_make_spans.add(fitness_function(machine_phases(population[-1])))
-        # print(f"Generation {generation + 1}/{generations} completed")# for the progress percentage
+        print(f"Generation {generation + 1}/{generations} completed")# for the progress percentage
 
     best_chromosome = population[0]
     machines_process = machine_phases(best_chromosome)
