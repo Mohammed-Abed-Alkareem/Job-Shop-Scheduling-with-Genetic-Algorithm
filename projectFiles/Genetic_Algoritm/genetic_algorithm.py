@@ -3,21 +3,18 @@ import copy
 
 import random
 
-from Fitness_Functions import get_makespan, get_working_time
-from projectFiles.read_csv import dictionary_store
+from projectFiles.Genetic_Algoritm.Fitness_Functions import get_makespan
+from projectFiles.Data.read_csv import dictionary_store
 
 random.seed()
-
-import time
-
-
 
 import matplotlib.pyplot as plt
 
 from matplotlib.patches import Patch
 
-from projectFiles.Job_Phases import *
-from Crossover_Functions import make_crossover, modified_order_crossover
+from projectFiles.Genetic_Algoritm.Job_Phases import *
+from projectFiles.Genetic_Algoritm.Crossover_Functions import make_crossover
+
 
 def create_chromosome(Jobs, population_size = 8):
 
@@ -385,7 +382,7 @@ def genetic_algorithm(jobs, population_size=8, generations=10,
     return best_chromosome, makespan, gen
 
 if __name__ == '__main__':
-    Jobs = dictionary_store("job_shop_schedule.csv")
+    Jobs = dictionary_store("../Data/job_shop_schedule.csv")
     population = create_chromosome(Jobs)
 
     for i in population:

@@ -1,11 +1,10 @@
 
-from read_csv import dictionary_store
-from genetic_algorithm import genetic_algorithm, create_chromosome
-from Fitness_Functions import get_makespan, get_working_time
+from projectFiles.Data.read_csv import dictionary_store
+from projectFiles.Genetic_Algoritm.genetic_algorithm import create_chromosome
 
-Jobs = dictionary_store("job_shop_schedule.csv")
+Jobs = dictionary_store("Data/job_shop_schedule.csv")
 
-from Crossover_Functions import cross_over
+from projectFiles.Genetic_Algoritm.Crossover_Functions import cross_over
 
 # population = create_chromosome(Jobs)
 

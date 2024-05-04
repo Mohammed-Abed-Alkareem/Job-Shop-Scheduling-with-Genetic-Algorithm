@@ -2,12 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from read_csv import dictionary_store
-from genetic_algorithm import genetic_algorithm, machine_phases, extract_jobs, draw_gantt_chart
-from Fitness_Functions import get_makespan, get_working_time
-from Crossover_Functions import make_crossover, modified_order_crossover
+from projectFiles.Data.read_csv import dictionary_store
+from projectFiles.Genetic_Algoritm.genetic_algorithm import genetic_algorithm, machine_phases, extract_jobs, draw_gantt_chart
+from projectFiles.Genetic_Algoritm.Fitness_Functions import get_makespan, get_working_time
+from projectFiles.Genetic_Algoritm.Crossover_Functions import make_crossover, modified_order_crossover
 
-Jobs = dictionary_store("job_shop_schedule.csv")
+Jobs = dictionary_store("Data/job_shop_schedule.csv")
 
 class GUI:
     def __init__(self, master):
@@ -106,7 +106,7 @@ class GUI:
         fitness_function = get_makespan if self.fitness_function_var.get() == "Makespan" else get_working_time
         crossover_function = make_crossover if self.crossover_function_var.get() == "Normal Crossover" else modified_order_crossover
 
-        best_chromosome, makespan = genetic_algorithm(jobs=Jobs, population_size=population_size,
+        best_chromosome, makespan,gen = genetic_algorithm(jobs=Jobs, population_size=population_size,
                                                       generations=generations, mutation_rate=mutation_rate,
                                                       fitness_function=fitness_function,
                                                       satisfication_vlue=satisfaction_value,
