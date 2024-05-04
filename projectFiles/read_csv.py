@@ -1,3 +1,5 @@
+import random
+
 import pandas as pd
 
 def read_csv(file_path):
@@ -19,5 +21,15 @@ def dictionary_store(file_path):
         for phase in phases:
             machine, time = phase.split("[")
             Jobs[row["Job"]].append((machine, int(time[:-1])))
+
+
+    print(Jobs)
+    items = list(Jobs.items())
+    random.shuffle(items)
+    Jobs = dict(items)
+
+    print(Jobs)
     return Jobs
 
+if __name__ == "__main__":
+    dictionary_store("job_shop_schedule.csv")

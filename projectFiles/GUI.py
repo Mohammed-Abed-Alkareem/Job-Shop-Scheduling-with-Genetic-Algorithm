@@ -5,7 +5,7 @@ from matplotlib.figure import Figure
 from read_csv import dictionary_store
 from genetic_algorithm import genetic_algorithm, machine_phases, extract_jobs, draw_gantt_chart
 from Fitness_Functions import get_makespan, get_working_time
-from crossovers import make_crossover, modified_order_crossover
+from Crossover_Functions import make_crossover, modified_order_crossover
 
 Jobs = dictionary_store("job_shop_schedule.csv")
 

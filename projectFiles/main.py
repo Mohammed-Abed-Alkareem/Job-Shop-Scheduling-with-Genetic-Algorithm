@@ -5,7 +5,7 @@ from Fitness_Functions import get_makespan, get_working_time
 
 Jobs = dictionary_store("job_shop_schedule.csv")
 
-from crossovers import cross_over
+from Crossover_Functions import cross_over
 
 # population = create_chromosome(Jobs)
 

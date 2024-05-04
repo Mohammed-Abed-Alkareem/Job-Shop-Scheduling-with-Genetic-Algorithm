@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Patch
 
 from projectFiles.Job_Phases import *
-from crossovers import make_crossover, modified_order_crossover
+from Crossover_Functions import make_crossover, modified_order_crossover
 
 def create_chromosome(Jobs, population_size = 8):
 
@@ -256,7 +256,7 @@ def extract_jobs(machines_process):
 
 
 def make_mutation(chromosome):
-    print("Mutation")
+    # print("Mutation")
     chromosome = list(chromosome)
     while True:
         # Get two phases to swap
@@ -345,11 +345,19 @@ def genetic_algorithm(jobs, population_size=8, generations=10,
     best_make_spans = set()
     worst_make_spans = set()
     population = create_chromosome(jobs, population_size)
+    best_chromosome = population[0]
+    gen = 0 #the generation in wich the best chromosome was found
 
     for generation in range(generations):
         weights = get_weights(population)
         new_population = generate_new_population(population, weights, population_size , mutation_rate, crossover_function)
         population = choose_new_population(population, new_population)
+
+        if fitness_function(machine_phases(population[0])) < fitness_function(machine_phases(best_chromosome)):
+            best_chromosome = population[0]
+            gen = generation
+
+
 
         if fitness_function(machine_phases(population[0])) <= satisfication_vlue:
             break
@@ -357,24 +365,24 @@ def genetic_algorithm(jobs, population_size=8, generations=10,
 #       #get the best makespan
         best_make_spans.add(fitness_function(machine_phases(population[0])))
         worst_make_spans.add(fitness_function(machine_phases(population[-1])))
-        print(f"Generation {generation + 1}/{generations} completed")# for the progress percentage
+        # print(f"Generation {generation + 1}/{generations} completed")# for the progress percentage
 
     best_chromosome = population[0]
     machines_process = machine_phases(best_chromosome)
-    jobs = extract_jobs(machines_process)
-    draw_gantt_chart(machines_process, jobs)
+    # jobs = extract_jobs(machines_process)
+    # draw_gantt_chart(machines_process, jobs)
     makespan = fitness_function(machines_process)
 
-    print("Best Chromosome")
-    for phase in best_chromosome:
-        print(phase.__repr__())
-    print("Best Makespan")
-    print(makespan)
-    print("Best Makespans")
-    print(best_make_spans)
-    print("Worst Makespans")
-    print(worst_make_spans)
-    return best_chromosome, makespan
+    # print("Best Chromosome")
+    # for phase in best_chromosome:
+    #     print(phase.__repr__())
+    # print("Best Makespan")
+    # print(makespan)
+    # print("Best Makespans")
+    # print(best_make_spans)
+    # print("Worst Makespans")
+    # print(worst_make_spans)
+    return best_chromosome, makespan, gen
 
 if __name__ == '__main__':
     Jobs = dictionary_store("job_shop_schedule.csv")
