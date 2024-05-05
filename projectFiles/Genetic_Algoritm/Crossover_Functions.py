@@ -1,6 +1,47 @@
 import random
 
 
+def partially_mapped_crossover(parent1, parent2):
+    chromosome_length = len(parent1)
+    start_cut = random.randint(0, chromosome_length - 1)
+    end_cut = random.randint(start_cut + 1, chromosome_length)
+
+    def get_child(p1, p2):
+        child = [None] * chromosome_length
+
+        child[start_cut:end_cut] = p1[start_cut:end_cut]
+
+        mapping = {p1[i]: p2[i] for i in range(start_cut, end_cut)}
+
+        for i in range(chromosome_length):
+            if child[i] is None:
+                item = p2[i]
+                while item in child:
+                    item = mapping.get(item, item)
+                child[i] = item
+
+        return child
+
+    child1 = get_child(parent1, parent2)
+    child2 = get_child(parent2, parent1)
+
+    def correct_job_order(child):
+        jobs = set(phase.job for phase in child)
+        for job in jobs:
+            phases = [phase for phase in child if phase.job == job]
+            phases.sort(key=lambda phase: phase.phase_order)
+            p = 0
+            for index, phase in enumerate(child):
+                if phase.job == job:
+                    child[index] = phases[p]
+                    p += 1
+
+    correct_job_order(child1)
+    correct_job_order(child2)
+
+    return tuple(child1), tuple(child2)
+
+
 def modified_order_crossover(parent1, parent2):
     child1 = []
     child2 = []
