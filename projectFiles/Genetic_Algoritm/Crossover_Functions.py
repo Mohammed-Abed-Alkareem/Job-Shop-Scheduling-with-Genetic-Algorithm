@@ -1,4 +1,5 @@
 import random
+random.seed()
 
 
 def partially_mapped_crossover(parent1, parent2):
@@ -99,20 +100,12 @@ def make_crossover(parent1, parent2):
     child1 = []
     child2 = []
 
-    # Get the length of the chromosome
     chromosome_length = len(parent1)
-    #get two random number less than the length of the chromosome TO MAKE THE CUTT
+    # get two random number less than the length of the chromosome TO MAKE THE CUTT
     cut1 = random.randint(1, chromosome_length - 3)
     cut2 = random.randint(cut1+1, chromosome_length - 2)
 
-
-
-    # print('length of chromosome: ', chromosome_length)
-    #
-    # print("Cut1: ", cut1)
-    # print("Cut2: ", cut2)
-
-    #then fill the rest in between cut 1 and cut 2 from parent2 to child1 if not in child 1
+    # then fill the rest in between cut 1 and cut 2 from parent2 to child1 if not in child 1
     child1 = list(parent1[:cut1] + parent1[cut2:])
     for phase in parent2:
         if phase not in child1:
@@ -125,7 +118,6 @@ def make_crossover(parent1, parent2):
         if phase not in child2:
             child2.insert(cut1, phase)
             cut1 += 1
-
 
     while not check_order(child1):
         child1 = correct_job_order(child1)
@@ -143,17 +135,6 @@ def cross_over(parent1, parent2):
     P1 = 0
     P2 = 0
 
-    # print("parent 1")
-    # for phase in parent1:
-    #     print(phase)
-    #
-    #
-    # print("parent 2")
-    # for phase in parent2:
-    #     print(phase)
-
-
-    #if the phase is already in the child go to next phase
     while len(child1) < len(parent1):
         if len(child1) % 2 == 0:
             if parent1[P1] not in child1:
@@ -181,24 +162,10 @@ def cross_over(parent1, parent2):
             else:
                 P2 += 1
 
-    # print("child 1")
-    # for phase in child1:
-    #     print(phase)
-
-    # print(check_order(child1))
-
-    # print("child 2")
-    # for phase in child2:
-    #     print(phase)
-
-    # print(check_order(child2))
-
     while not check_order(child1):
-        print("Correcting child 1")
         child1 = correct_job_order(child1)
 
     while not check_order(child2):
-        print("Correcting child 2")
         child2 = correct_job_order(child2)
 
     return tuple(child1), tuple(child2)
@@ -229,8 +196,6 @@ def correct_job_order(chromosome):
 
     swap_made = True  # Initialize swap_made to True to enter the while loop
 
-    print("Correcting job order")
-
     while swap_made:  # Continue until no swaps are made in a full pass
         swap_made = False  # Reset swap_made to False at the start of each pass
 
@@ -240,13 +205,9 @@ def correct_job_order(chromosome):
         for phase in chromosome:
 
             if jobs[phase.job] < phase.phase_order:
-                print(f"Phase {phase} is out of order")
-                print(jobs)
-                print("Swapping")
                 # Find the phase that is in its order and swap it with the current phase
                 for i in range(chromosome.index(phase)+1, len(chromosome)):
                     if chromosome[i].job == phase.job and chromosome[i].phase_order == jobs[phase.job]:
-                        print(f"Swapping {chromosome[i]} with {chromosome[chromosome.index(phase)]}")
 
                         chromosome[i], chromosome[chromosome.index(phase)] = (
                             chromosome[chromosome.index(phase)], chromosome[i])
