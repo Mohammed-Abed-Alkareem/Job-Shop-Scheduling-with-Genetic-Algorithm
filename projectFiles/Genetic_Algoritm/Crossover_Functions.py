@@ -188,36 +188,28 @@ def check_order(chromosome):
 
 
 def correct_job_order(chromosome):
-    for phase in chromosome:
-        print(phase)
 
     chromosome = list(chromosome)
-    jobs = {}
 
-    swap_made = True  # Initialize swap_made to True to enter the while loop
+    job_phases = {}
+    job_indecies = {}
+    for phase in chromosome:
+        job = phase.job
+        if job not in job_indecies:
+            job_indecies[job] = []
+            job_phases[job] = []
+        job_phases[job].append(phase)
+        job_indecies[job].append(chromosome.index(phase))
 
-    while swap_made:  # Continue until no swaps are made in a full pass
-        swap_made = False  # Reset swap_made to False at the start of each pass
+    # sort each list in job phases based on order
+    for job in job_phases:
+        job_phases[job] = sorted(job_phases[job], key=lambda x: x.phase_order)
 
-        for phase in chromosome:
-            jobs[phase.job] = 1
 
-        for phase in chromosome:
+    for job in job_indecies:
+        for index in job_indecies[job]:
+            # aapend at the correct index
+            chromosome[index] = job_phases[job].pop(0)
 
-            if jobs[phase.job] < phase.phase_order:
-                # Find the phase that is in its order and swap it with the current phase
-                for i in range(chromosome.index(phase)+1, len(chromosome)):
-                    if chromosome[i].job == phase.job and chromosome[i].phase_order == jobs[phase.job]:
-
-                        chromosome[i], chromosome[chromosome.index(phase)] = (
-                            chromosome[chromosome.index(phase)], chromosome[i])
-
-                        swap_made = True  # Set swap_made to True because a swap was made
-                        break
-
-                break
-
-            else:
-                jobs[phase.job] += 1
 
     return tuple(chromosome)
