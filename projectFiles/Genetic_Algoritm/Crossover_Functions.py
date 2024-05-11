@@ -43,7 +43,7 @@ def partially_mapped_crossover(parent1, parent2):
     return tuple(child1), tuple(child2)
 
 
-def modified_order_crossover(parent1, parent2):
+def single_segment_crossover(parent1, parent2):
     child1 = []
     child2 = []
     parent1 = list(parent1)
@@ -96,7 +96,7 @@ def modified_order_crossover(parent1, parent2):
     return tuple(child1), tuple(child2)
 
 
-def make_crossover(parent1, parent2):
+def double_segment_crossover(parent1, parent2):
     child1 = []
     child2 = []
 
@@ -128,7 +128,7 @@ def make_crossover(parent1, parent2):
     return tuple(child1), tuple(child2)
 
 
-def cross_over(parent1, parent2):
+def alternating_parental_gene_crossover(parent1, parent2):
     '''this is another crossover by taking phase from one parent and the other from the other parent and so on make sure that the phase doesnot already exists in the child'''
     child1 = []
     child2 = []
