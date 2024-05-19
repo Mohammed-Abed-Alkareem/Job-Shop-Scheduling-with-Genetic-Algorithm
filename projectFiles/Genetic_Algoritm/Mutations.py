@@ -2,7 +2,20 @@ import random
 random.seed()
 
 
-def make_mutation(chromosome):
+def correct_job_order(chromosome):
+    jobs = set(phase.job for phase in chromosome)
+    for job in jobs:
+        phases = [phase for phase in chromosome if phase.job == job]
+        phases.sort(key=lambda phase: phase.phase_order)
+        p = 0
+        for index, phase in enumerate(chromosome):
+            if phase.job == job:
+                chromosome[index] = phases[p]
+                p += 1
+
+
+# Choosing two positions and swapping them
+def swapping_mutation(chromosome):
 
     chromosome = list(chromosome)
     while True:
@@ -30,3 +43,39 @@ def make_mutation(chromosome):
             break
 
     return tuple(chromosome)
+
+
+# Choosing a segment and sorting it in reverse
+def inversion_mutation(chromosome):
+    chromosome = list(chromosome)
+    size = len(chromosome) // 3
+    mutated_chromosome = chromosome.copy()
+
+    start = random.randint(0, len(chromosome) - size - 1)
+    end = start + size
+
+    subset = mutated_chromosome[start:end + 1]
+    subset.reverse()
+    mutated_chromosome[start:end + 1] = subset
+
+    correct_job_order(mutated_chromosome)
+
+    return tuple(mutated_chromosome)
+
+
+# Choosing a segment and randomly shuffling it
+def scramble_mutation(chromosome):
+    chromosome = list(chromosome)
+    size = len(chromosome) // 3
+    mutated_chromosome = chromosome.copy()
+
+    start = random.randint(0, len(chromosome) - size - 1)
+    end = start + size
+
+    subset = mutated_chromosome[start:end + 1]
+    random.shuffle(subset)
+    mutated_chromosome[start:end + 1] = subset
+
+    correct_job_order(mutated_chromosome)
+
+    return tuple(mutated_chromosome)

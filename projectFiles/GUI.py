@@ -4,10 +4,13 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from projectFiles.Data.read_csv import dictionary_store
 from projectFiles.Genetic_Algoritm.genetic_algorithm import genetic_algorithm, machine_phases, extract_jobs, draw_gantt_chart
-from projectFiles.Genetic_Algoritm.Fitness_Functions import get_makespan, get_working_time
-from projectFiles.Genetic_Algoritm.Crossover_Functions import make_crossover, modified_order_crossover
+from projectFiles.Genetic_Algoritm.Fitness_Functions import get_makespan, get_working_time, get_machines_standard_deviation
+from projectFiles.Genetic_Algoritm.Crossover_Functions import partially_mapped_crossover, single_segment_crossover,\
+    double_segment_crossover, alternating_parental_gene_crossover
+from projectFiles.Genetic_Algoritm.Mutations import scramble_mutation, swapping_mutation
 
 Jobs = dictionary_store("Data/job_shop_schedule.csv")
+
 
 class GUI:
     def __init__(self, master):
@@ -30,7 +33,6 @@ class GUI:
 
         #window size
         master.geometry("1200x800")
-
 
 
         self.label = ttk.Label(master, text="Genetic Algorithm", font=label_font, background=label_bg_color, foreground=label_fg_color)
@@ -58,19 +60,33 @@ class GUI:
 
         self.fitness_function_label = ttk.Label(master, text="Fitness Function:", font=label_font, background=label_bg_color, foreground=label_fg_color)
         self.fitness_function_var = tk.StringVar()
-        self.fitness_function_combobox = ttk.Combobox(master, textvariable=self.fitness_function_var, values=["Makespan", "Working Time"], font=entry_font, background=entry_bg_color, foreground=entry_fg_color)
+        self.fitness_function_combobox = ttk.Combobox(master, textvariable=self.fitness_function_var, values=["Makespan", "Working Time", "Machine Finish Time Standard Deviation"], font=entry_font, background=entry_bg_color, foreground=entry_fg_color)
         self.fitness_function_label.pack(pady=3)
         self.fitness_function_combobox.pack(pady=3)
 
         self.crossover_function_label = ttk.Label(master, text="Crossover Function:", font=label_font,
                                                   background=label_bg_color, foreground=label_fg_color)
-        self.crossover_function_label.pack(pady=3)
-        self.crossover_function_var = tk.StringVar()
-        self.crossover_function_combobox = ttk.Combobox(master, textvariable=self.crossover_function_var,
-                                                        values=["Normal Crossover", "Modified Order Crossover"],
-                                                        font=entry_font, background=entry_bg_color,
-                                                        foreground=entry_fg_color)
-        self.crossover_function_combobox.pack(pady=3)
+        # self.crossover_function_label.pack(pady=3)
+        # self.crossover_function_var = tk.StringVar()
+        # self.crossover_function_combobox = ttk.Combobox(master, textvariable=self.crossover_function_var,
+        #                                                 values=["Single Segment Crossover",
+        #                                                         "Double Segment Crossover",
+        #                                                         "Partially Mapped Crossover",
+        #                                                         "Alternating Parental Gene Crossover"],
+        #                                                 font=entry_font, background=entry_bg_color,
+        #                                                 foreground=entry_fg_color)
+        # self.crossover_function_combobox.pack(pady=3)
+
+        # self.mutation_function_label = ttk.Label(master, text="Mutation Function:", font=label_font,
+        #                                           background=label_bg_color, foreground=label_fg_color)
+        # self.mutation_function_label.pack(pady=3)
+        # self.mutation_function_var = tk.StringVar()
+        # self.mutation_function_combobox = ttk.Combobox(master, textvariable=self.mutation_function_var,
+        #                                                 values=["Swap Mutation",
+        #                                                         "Scramble Mutation"],
+        #                                                 font=entry_font, background=entry_bg_color,
+        #                                                 foreground=entry_fg_color)
+        # self.mutation_function_combobox.pack(pady=3)
 
         self.run_button = ttk.Button(master, text="Run Genetic Algorithm", command=self.run_genetic_algorithm, style="Run.TButton")
         self.run_button.pack(pady=3)
@@ -104,13 +120,35 @@ class GUI:
         mutation_rate = float(self.mutation_rate_entry.get())
         satisfaction_value = int(self.satisfaction_value_entry.get())
         fitness_function = get_makespan if self.fitness_function_var.get() == "Makespan" else get_working_time
-        crossover_function = make_crossover if self.crossover_function_var.get() == "Normal Crossover" else modified_order_crossover
 
+        if self.fitness_function_var.get() == "Makespan":
+            fitness_function = get_makespan
+        elif self.fitness_function_var.get() == "Working Time":
+            fitness_function = get_working_time
+        elif self.fitness_function_var.get() == "Machine Finish Time Standard Deviation":
+            fitness_function = get_machines_standard_deviation
+
+        # if self.crossover_function_var.get() == "Single Segment Crossover":
+        #     crossover_function = single_segment_crossover
+        # elif self.crossover_function_var.get() == "Double Segment Crossover":
+        #     crossover_function = double_segment_crossover
+        # elif self.crossover_function_var.get() == "Partially Mapped Crossover":
+        #     crossover_function = partially_mapped_crossover
+        # elif self.crossover_function_var.get() == "Alternating Parental Gene Crossover":
+        #     crossover_function = alternating_parental_gene_crossover
+        #
+        # if self.mutation_function_var.get() == "Swap Mutation":
+        #     mutation_function = swapping_mutation
+        # elif self.mutation_function_var.get() == "Scramble Mutation":
+        #     mutation_function = scramble_mutation
+        crossover_function = single_segment_crossover
+        mutation_function = scramble_mutation
         best_chromosome, makespan,gen = genetic_algorithm(jobs=Jobs, population_size=population_size,
                                                       generations=generations, mutation_rate=mutation_rate,
                                                       fitness_function=fitness_function,
                                                       satisfication_vlue=satisfaction_value,
-                                                      crossover_function=crossover_function)
+                                                      crossover_function=crossover_function,
+                                                      mutation_function=mutation_function)
 
         self.figure.clear()
         ax = self.figure.add_subplot(111)
