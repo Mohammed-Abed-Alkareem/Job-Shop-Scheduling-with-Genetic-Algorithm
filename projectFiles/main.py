@@ -5,7 +5,7 @@ from projectFiles.Genetic_Algoritm.Crossover_Functions import *
 
 Jobs = dictionary_store("Data/job_shop_schedule.csv")
 
-from projectFiles.Genetic_Algoritm.Crossover_Functions import cross_over
+#from projectFiles.Genetic_Algoritm.Crossover_Functions import cross_over
 
 # population = create_chromosome(Jobs)
 

@@ -2,6 +2,9 @@ import random
 random.seed()
 
 
+# Partially mapped crossover, works by selecting two crossover points and swapping the segments between these points.
+# It preserves the order and position of as many genes as possible from the parents.
+# Mapping relationships are created to ensure that each gene appears exactly once in the offspring.
 def partially_mapped_crossover(parent1, parent2):
     chromosome_length = len(parent1)
     start_cut = random.randint(0, chromosome_length - 1)
@@ -43,6 +46,9 @@ def partially_mapped_crossover(parent1, parent2):
     return tuple(child1), tuple(child2)
 
 
+# A single segment (subsequence) is selected from one parent and directly copied to the offspring.
+# The remaining genes are filled in from the second parent while preserving their order,
+# excluding those already present in the segment copied from the first parent.
 def single_segment_crossover(parent1, parent2):
     child1 = []
     child2 = []
@@ -96,6 +102,9 @@ def single_segment_crossover(parent1, parent2):
     return tuple(child1), tuple(child2)
 
 
+# Double Segment Crossover involves selecting two segments from one parent and copying them directly to the offspring.
+# The genes outside these segments are filled in from the second parent,
+# maintaining their order and excluding any genes already present in the copied segments.
 def double_segment_crossover(parent1, parent2):
     child1 = []
     child2 = []
@@ -128,6 +137,9 @@ def double_segment_crossover(parent1, parent2):
     return tuple(child1), tuple(child2)
 
 
+# Alternating Parental Crossover constructs the offspring by alternately taking genes from each parent.
+# Starting with one parent, the first gene is taken, then the second gene from the other parent,
+# and so on, ensuring that the order of genes is maintained and each gene appears only once in the offspring.
 def alternating_parental_gene_crossover(parent1, parent2):
     '''this is another crossover by taking phase from one parent and the other from the other parent and so on make sure that the phase doesnot already exists in the child'''
     child1 = []
@@ -205,11 +217,9 @@ def correct_job_order(chromosome):
     for job in job_phases:
         job_phases[job] = sorted(job_phases[job], key=lambda x: x.phase_order)
 
-
     for job in job_indecies:
         for index in job_indecies[job]:
             # aapend at the correct index
             chromosome[index] = job_phases[job].pop(0)
-
 
     return tuple(chromosome)

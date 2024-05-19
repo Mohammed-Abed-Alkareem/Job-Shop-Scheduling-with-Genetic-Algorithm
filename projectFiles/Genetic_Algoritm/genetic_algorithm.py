@@ -10,6 +10,7 @@ from projectFiles.Genetic_Algoritm.Crossover_Functions import *
 from projectFiles.Genetic_Algoritm.Mutations import *
 
 
+# Creating a population
 def create_chromosome(Jobs, population_size=8):
 
     population = []
@@ -111,6 +112,7 @@ def machine_phases(chromosome):
     return machines_process
 
 
+# Gantt Chart
 def draw_gantt_chart(machines_process, jobs, ax=None):
 
     if ax is None:
@@ -167,25 +169,43 @@ def extract_jobs(machines_process):
     return jobs
 
 
+# Calculating Weights for population
 def get_weights(population, fitness_function=get_makespan):
     sum_fitness = 0
     weights = []
 
     for chromosome in population:
         fitness_value = fitness_function(machine_phases(chromosome))
-        sum_fitness += 1 / fitness_value
-        weights.append(1 / fitness_value)
+        if fitness_value != 0:
+            sum_fitness += 1 / fitness_value
+            weights.append(1 / fitness_value)
+        else:
+            weights.append(1)
 
-    weights = [weight / sum_fitness for weight in weights]
+    one_counts = 0
+    for index, weight in enumerate(weights):
+        if weight == 1:
+            one_counts += 1
+
+    if one_counts > 0:
+        for index, weight in enumerate(weights):
+            if weight == 1:
+                weights[index] = 1 / one_counts
+            else:
+                weights[index] = 0
+    else:
+        weights = [weight / sum_fitness for weight in weights]
 
     return weights
 
 
+# Creating children
 def generate_new_population(population,
                             weights,
                             population_size,
                             mutation_rate=0.01,
-                            crossover_function=make_crossover
+                            crossover_function=single_segment_crossover,
+                            mutation_function=swapping_mutation
                             ):
     new_population = []
 
@@ -197,9 +217,9 @@ def generate_new_population(population,
 
         # Perform mutation
         if random.random() < mutation_rate:
-            child1 = make_mutation(child1)
+            child1 = mutation_function(child1)
         if random.random() < mutation_rate:
-            child2 = make_mutation(child2)
+            child2 = mutation_function(child2)
 
         new_population.append(child1)
         new_population.append(child2)
@@ -207,6 +227,7 @@ def generate_new_population(population,
     return new_population
 
 
+# Combining the children with the current population
 def choose_new_population(population, new_population, fitness_function=get_makespan):
     # Combine the old and new populations
     combined_population = population + new_population
@@ -224,7 +245,7 @@ def choose_new_population(population, new_population, fitness_function=get_makes
 
 def genetic_algorithm(jobs, population_size=8, generations=10,
                       mutation_rate=0.01, fitness_function=get_makespan, satisfication_vlue=0,
-                      crossover_function=make_crossover):
+                      crossover_function=single_segment_crossover, mutation_function=swapping_mutation):
 
     population = create_chromosome(jobs, population_size)
     best_chromosome = population[0]
@@ -237,7 +258,8 @@ def genetic_algorithm(jobs, population_size=8, generations=10,
                                                  weights,
                                                  population_size,
                                                  mutation_rate,
-                                                 crossover_function
+                                                 crossover_function,
+                                                 mutation_function
                                                  )
         population = choose_new_population(population, new_population)
 
