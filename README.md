@@ -116,16 +116,16 @@ The genetic algorithm aims to:
 
 ### Make Span
 
-- ![Make Span Gantt-Chart](Report/ScreenShots/Makespan-Gantt-Chart.png)
+- ![Make Span Gantt-Chart](/Report/ScreenShots/Makespan_Gantt-Chart.png)
 
 
 ### Working Time
 
-- **Figure 7-2**: Gantt chart for working time.
+- ![Working Time Gantt-Chart](/Report/ScreenShots/Working_Time_Gantt-Chart.png)
 
 ### Standard Deviation
 
-- **Figure 7-3**: Gantt chart for standard deviation.
+- ![Standard Deviation Gantt-Chart](/Report/ScreenShots/Standard_Deviation_Gantt-Chart.png)
 
 ## Conclusion
 
