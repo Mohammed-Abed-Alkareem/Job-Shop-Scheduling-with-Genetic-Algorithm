@@ -116,7 +116,7 @@ The genetic algorithm aims to:
 
 ### Make Span
 
-- ![Make Span Gantt-Chart](Job-Shop-Scheduling-with-Genetic-Algorithm/Report/ScreenShots/Makespan-Gantt-Chart.png)
+- ![Make Span Gantt-Chart](Report/ScreenShots/Makespan-Gantt-Chart.png)
 
 
 ### Working Time
