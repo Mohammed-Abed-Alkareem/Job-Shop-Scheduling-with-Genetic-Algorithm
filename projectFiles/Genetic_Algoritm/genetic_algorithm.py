@@ -252,7 +252,7 @@ def genetic_algorithm(jobs, population_size=8, generations=10,
     gen = 0  # the generation in which the best chromosome was found
 
     for generation in range(generations):
-        weights = get_weights(population)
+        weights = get_weights(population, fitness_function)
         new_population = generate_new_population(
                                                  population,
                                                  weights,
