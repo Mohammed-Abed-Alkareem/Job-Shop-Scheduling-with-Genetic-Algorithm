@@ -97,7 +97,7 @@ This repository contains the project "Optimizing Job Shop Scheduling in a Manufa
 
 Ensure you have the following dependencies installed on your system:
 
-* **Python**: `version x.y.z`
+* **Python**: `version 3.11.0`
 
 ###  Installation
 
